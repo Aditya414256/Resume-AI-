@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% from 'components/macros.html' import status_badge %}
+
+{% block title %}Compare Analyses — ResumeAI{% endblock %}
+{% block meta_description %}Compare two resume analyses side by side to track your improvement.{% endblock %}
+
+{% block content %}
+
+<!-- ════════════════════ HEADER ════════════════════ -->
+<section class="bg-white border-b border-gray-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Compare Resume Analyses</h1>
+        <p class="text-sm text-gray-500 mt-1">Select two analyses to see how your resume has improved.</p>
+    </div>
+</section>
+
+
+<!-- ════════════════════ SELECTORS ════════════════════ -->
+<section class="py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid sm:grid-cols-2 gap-4 mb-8">
+            <!-- Select A -->
+            <div>
+                <label for="compare-a" class="block text-sm font-semibold text-gray-700 mb-1.5">Earlier Analysis</label>
+                <select id="compare-a" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-700 bg-white focus:border-brand-400 focus:ring-2 focus:ring-brand-100 transition" aria-label="Select earlier analysis">
+                    {% for a in analyses %}
+                    <option value="{{ a.id }}" {% if a.id == 5 %}selected{% endif %}>{{ a.filename }} — {{ a.date }} (Score: {{ a.overall_score }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Select B -->
+            <div>
+                <label for="compare-b" class="block text-sm font-semibold text-gray-700 mb-1.5">Later Analysis</label>
+                <select id="compare-b" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-700 bg-white focus:border-brand-400 focus:ring-2 focus:ring-brand-100 transition" aria-label="Select later analysis">
+                    {% for a in analyses %}
+                    <option value="{{ a.id }}" {% if a.id == 1 %}selected{% endif %}>{{ a.filename }} — {{ a.date }} (Score: {{ a.overall_score }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <button id="compare-btn" class="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 shadow-sm transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+            Compare
+        </button>
+    </div>
+</section>
+
+
+<!-- ════════════════════ COMPARISON RESULTS ════════════════════ -->
+<section id="compare-results" class="pb-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Overall scores side-by-side -->
+        <div class="grid sm:grid-cols-2 gap-4 mb-6">
+            <div id="card-a" class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 text-center">
+                <div class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">Earlier</div>
+                <div id="title-a" class="text-sm font-semibold text-gray-700 mb-3 truncate"></div>
+                <div id="score-a" class="text-5xl font-bold"></div>
+                <div class="text-xs text-gray-400 mt-1">/100</div>
+            </div>
+            <div id="card-b" class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 text-center">
+                <div class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">Later</div>
+                <div id="title-b" class="text-sm font-semibold text-gray-700 mb-3 truncate"></div>
+                <div id="score-b" class="text-5xl font-bold"></div>
+                <div class="text-xs text-gray-400 mt-1">/100</div>
+            </div>
+        </div>
+
+        <!-- Change summary -->
+        <div id="change-summary" class="mb-8 text-center">
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-gray-200 shadow-sm">
+                <span id="change-icon"></span>
+                <span id="change-text" class="text-sm font-semibold"></span>
+            </div>
+        </div>
+
+        <!-- Section comparison -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100">
+                <h2 class="text-base font-bold text-gray-900">Section-by-Section Comparison</h2>
+            </div>
+            <div id="section-rows" class="divide-y divide-gray-100"></div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Embed all analyses data as JSON for client-side comparison
+var ANALYSES = {{ analyses | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/compare.js') }}"></script>
+{% endblock %}

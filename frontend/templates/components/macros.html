@@ -1,0 +1,118 @@
+{#
+    Reusable Jinja2 macros for the AI Resume Analyzer UI.
+    Import in templates with: {% from 'components/macros.html' import ... %}
+#}
+
+
+{# ── Score Gauge ─────────────────────────────────────────────────────── #}
+{% macro score_gauge(score, size='lg', label='Overall Resume Score', canvas_id='scoreGauge') %}
+{% set color_class = 'text-red-500' if score < 50 else ('text-amber-500' if score < 75 else 'text-emerald-500') %}
+<div class="flex flex-col items-center gap-3">
+    <div class="relative {% if size == 'lg' %}w-44 h-44{% elif size == 'md' %}w-28 h-28{% else %}w-20 h-20{% endif %}">
+        <canvas id="{{ canvas_id }}" width="200" height="200"></canvas>
+        <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <span class="{% if size == 'lg' %}text-4xl{% elif size == 'md' %}text-2xl{% else %}text-lg{% endif %} font-bold {{ color_class }}">{{ score }}</span>
+            <span class="{% if size == 'lg' %}text-xs{% else %}text-[10px]{% endif %} text-gray-400 font-medium">/100</span>
+        </div>
+    </div>
+    {% if label %}
+    <span class="text-sm font-medium text-gray-500">{{ label }}</span>
+    {% endif %}
+</div>
+{% endmacro %}
+
+
+{# ── Status Badge ────────────────────────────────────────────────────── #}
+{% macro status_badge(status) %}
+{% if status == 'Excellent' %}
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+    Excellent
+</span>
+{% elif status == 'Good' %}
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+    Good
+</span>
+{% elif status == 'Needs Improvement' %}
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+    Needs Improvement
+</span>
+{% elif status == 'Critical' %}
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200">
+    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
+    Critical
+</span>
+{% else %}
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">{{ status }}</span>
+{% endif %}
+{% endmacro %}
+
+
+{# ── Section Card ────────────────────────────────────────────────────── #}
+{% macro section_card(section, card_id='') %}
+{% set score = section.score %}
+{% set bar_color = 'bg-red-500' if score < 50 else ('bg-amber-400' if score < 75 else 'bg-emerald-500') %}
+{% set bar_bg = 'bg-red-100' if score < 50 else ('bg-amber-100' if score < 75 else 'bg-emerald-100') %}
+<div class="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md hover:border-gray-300 transition-all group">
+    <div class="flex items-start justify-between mb-3">
+        <h3 class="text-sm font-semibold text-gray-900">{{ section.name }}</h3>
+        {{ status_badge(section.status) }}
+    </div>
+    <div class="flex items-center gap-3 mb-3">
+        <div class="flex-1 h-2 {{ bar_bg }} rounded-full overflow-hidden">
+            <div class="{{ bar_color }} h-full rounded-full transition-all duration-500" style="width: {{ score }}%"></div>
+        </div>
+        <span class="text-sm font-bold {% if score < 50 %}text-red-600{% elif score < 75 %}text-amber-600{% else %}text-emerald-600{% endif %}">{{ score }}</span>
+    </div>
+    <p class="text-sm text-gray-600 leading-relaxed">{{ section.feedback }}</p>
+
+    {% if section.details %}
+    <div class="mt-3 overflow-hidden transition-all duration-300 max-h-0" id="details-{{ card_id }}">
+        <ul class="space-y-1.5 pt-3 border-t border-gray-100">
+            {% for detail in section.details %}
+            <li class="flex items-start gap-2 text-xs text-gray-500">
+                <svg class="w-3.5 h-3.5 mt-0.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                {{ detail }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <button onclick="toggleDetails('details-{{ card_id }}')" class="mt-2 text-xs font-medium text-brand-600 hover:text-brand-700 transition" id="toggle-btn-details-{{ card_id }}">
+        View details
+    </button>
+    {% endif %}
+</div>
+{% endmacro %}
+
+
+{# ── Metric Card (small) ────────────────────────────────────────────── #}
+{% macro metric_card(label, value, suffix='', icon_svg='') %}
+<div class="bg-white rounded-xl border border-gray-200 p-4 text-center hover:shadow-sm transition-shadow">
+    {% if icon_svg %}
+    <div class="flex justify-center mb-2">{{ icon_svg | safe }}</div>
+    {% endif %}
+    <div class="text-2xl font-bold text-gray-900">{{ value }}{{ suffix }}</div>
+    <div class="text-xs text-gray-500 mt-1 font-medium">{{ label }}</div>
+</div>
+{% endmacro %}
+
+
+{# ── Loading Overlay ─────────────────────────────────────────────────── #}
+{% macro loading_overlay() %}
+<div id="loading-overlay" class="hidden fixed inset-0 z-[60] bg-gray-900/60 backdrop-blur-sm flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 sm:p-10 max-w-sm w-full mx-4 text-center">
+        <!-- Spinner -->
+        <div class="mx-auto w-16 h-16 mb-6 relative">
+            <div class="absolute inset-0 rounded-full border-4 border-brand-100"></div>
+            <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-brand-600 animate-spin"></div>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Analyzing your resume</h3>
+        <p id="loading-message" class="text-sm text-gray-500 transition-opacity duration-300">Uploading resume...</p>
+        <div class="mt-5 w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+            <div id="loading-progress" class="h-full bg-gradient-to-r from-brand-500 to-brand-600 rounded-full transition-all duration-700 ease-out" style="width: 0%"></div>
+        </div>
+    </div>
+</div>
+{% endmacro %}

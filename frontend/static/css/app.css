@@ -1,0 +1,167 @@
+/* ═══════════════════════════════════════════════════════════════
+   ResumeAI — App Stylesheet
+   Custom styles that supplement Tailwind CSS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Smooth scrolling & selection ──────────────────────────────── */
+html { scroll-behavior: smooth; }
+
+::selection {
+    background-color: #c7d2fe;
+    color: #1e1b4b;
+}
+
+/* ── Focus ring ────────────────────────────────────────────────── */
+:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* ── Upload drag zone states ───────────────────────────────────── */
+.upload-zone {
+    transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+.upload-zone.drag-over {
+    border-color: #6366f1;
+    background-color: #eef2ff;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.upload-zone.has-file {
+    border-color: #10b981;
+    background-color: #ecfdf5;
+}
+
+.upload-zone.has-error {
+    border-color: #ef4444;
+    background-color: #fef2f2;
+}
+
+/* ── Card hover lift ───────────────────────────────────────────── */
+.card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.08), 0 4px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* ── Keyword chips ─────────────────────────────────────────────── */
+.keyword-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    transition: transform 0.15s ease;
+}
+.keyword-chip:hover {
+    transform: scale(1.05);
+}
+.keyword-chip.found {
+    background-color: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+.keyword-chip.missing {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+/* ── Pulse animation for loading dots ──────────────────────────── */
+@keyframes pulse-dot {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50%      { opacity: 1;   transform: scale(1.2); }
+}
+.loading-dot {
+    animation: pulse-dot 1.4s ease-in-out infinite;
+}
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* ── Score ring animation ──────────────────────────────────────── */
+@keyframes score-fill {
+    from { stroke-dashoffset: 440; }
+}
+
+/* ── Smooth expand/collapse ────────────────────────────────────── */
+.expand-enter {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+.expand-enter.expanded {
+    max-height: 500px;
+    opacity: 1;
+}
+
+/* ── Hero mockup dashboard ─────────────────────────────────────── */
+.hero-mockup {
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 50%, #f0f9ff 100%);
+    border: 1px solid #e2e8f0;
+}
+
+/* ── Responsive table → card on mobile ─────────────────────────── */
+@media (max-width: 767px) {
+    .responsive-table thead { display: none; }
+    .responsive-table tbody tr {
+        display: block;
+        margin-bottom: 0.75rem;
+        background: white;
+        border-radius: 0.75rem;
+        border: 1px solid #e5e7eb;
+        padding: 1rem;
+    }
+    .responsive-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.35rem 0;
+        border: none;
+        font-size: 0.875rem;
+    }
+    .responsive-table tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #374151;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+}
+
+/* ── Tooltip ───────────────────────────────────────────────────── */
+.tooltip-wrap { position: relative; }
+.tooltip-wrap .tooltip-text {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    z-index: 30;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: #f9fafb;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 6px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+.tooltip-wrap:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* ── Compare improvement/regression indicators ─────────────────── */
+.score-up { color: #059669; }
+.score-down { color: #dc2626; }
+.score-same { color: #6b7280; }
